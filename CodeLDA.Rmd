@@ -1,0 +1,76 @@
+---
+title: "Data traitement"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-10-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I install and import the packages I need. 
+```{r cars}
+#install
+install.packages('quanteda')
+install.packages('quanteda.textstats')
+install.packages('spacyr')
+install.packages('topicmodels')
+install.packages('ldatuning')
+install.packages('LDAvis')
+
+# data manipulation
+library(tidyverse) 
+library(lubridate)
+library(here)
+
+# lexicometry
+library(quanteda)
+library(quanteda.textstats)
+library(spacyr)
+
+#LDA
+library(topicmodels)
+library(ldatuning)
+library(LDAvis)
+```
+We import the database. It's not on my repository for privacy reasons. 
+```{r cars}
+d <- telerama_films
+```
+I prepare the corpus
+```{r cars}
+#Eliminating duplicates
+duplicated_titles <- d[duplicated(d$title), "title"]
+d$title <- make.unique(d$title)
+```
+
+```{r cars} 
+#Corpus format 
+d$text <- str_replace_all(d$text, "[’'‘`´]", " ")
+cp <- corpus(d$text, 
+             docvars = select(d, "url", "note", "author", "date", "genre", "realisateur", "acteurs", "moviedate"),
+             docnames = d$title)
+```
+
+
+```{r cars}
+#Tokens 
+tk <- tokens(cp, remove_punct = TRUE, remove_numbers = TRUE)
+dfm <- dfm(tk) #Document-Feature Matrix 
+```
+On va virer les stop words
+```{r cars}
+#We do this step until useless words are not too much present. 
+toremove <- c(stopwords("french"), 
+              "a", "aussi", "comme")
+dfm <- dfm_remove(dfm, toremove)
+textstat_frequency(dfm, n=20)
+```
+```{r cars}
+```
+```{r cars}
+```
+```{r cars}
+```
